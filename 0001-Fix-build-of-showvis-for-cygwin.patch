@@ -1,0 +1,28 @@
+From c9c42aa5b41b762969c131cff8c8f24141b165b1 Mon Sep 17 00:00:00 2001
+From: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date: Wed, 4 Aug 2010 23:42:22 +0100
+Subject: [PATCH 1/4] Fix build of showvis for cygwin
+
+Fully link showvis to fix build on cygwin
+
+Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+---
+ src/tools/showvis/Makefile |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/src/tools/showvis/Makefile b/src/tools/showvis/Makefile
+index 48863bd..828c8af 100644
+--- a/src/tools/showvis/Makefile
++++ b/src/tools/showvis/Makefile
+@@ -4,7 +4,7 @@ TARGET=showvis
+ ifeq ($(PLATFORM), MacOSX)
+ 	LIB=-framework GLUT -framework OpenGL -framework AGL -framework Carbon -ldsurf -llex -limage -lstats -ltimer -ltiff
+ else
+-	LIB=-ldsurf -llex -lGL $(EXTRALIBS)
++	LIB=-ldsurf -llex -lGL -lX11 $(EXTRALIBS)
+ endif # MacOSX
+ 
+ 
+-- 
+1.7.4
+

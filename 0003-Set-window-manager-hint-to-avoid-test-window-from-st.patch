@@ -1,0 +1,44 @@
+From 64869a6012fe98bc77812e7d2405cc772a2da7dc Mon Sep 17 00:00:00 2001
+From: Carl Worth <cworth@cworth.org>
+Date: Fri, 25 Mar 2011 14:02:53 +0000
+Subject: [PATCH 3/4] Set window-manager hint to avoid test window from stealing input focus.
+
+This allows the user to continue to type at other windows while glean
+tests are running.
+
+Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+---
+ src/glean/dsurf.cpp |   10 ++++++++++
+ 1 files changed, 10 insertions(+), 0 deletions(-)
+
+diff --git a/src/glean/dsurf.cpp b/src/glean/dsurf.cpp
+index f158921..2a3bea1 100644
+--- a/src/glean/dsurf.cpp
++++ b/src/glean/dsurf.cpp
+@@ -87,6 +87,7 @@ legacyMethod:
+ 
+ 	// Create the window:
+ 	XSetWindowAttributes xswa;
++	XWMHints *wmHints;
+ 	xswa.background_pixmap = None;
+ 	xswa.border_pixel = 0;
+ 	xswa.colormap = ChooseColormap(winSys->dpy, config->vi);
+@@ -111,6 +112,15 @@ legacyMethod:
+ 	XSetStandardProperties(winSys->dpy, xWindow, "glean", "glean",
+ 		None, 0, 0, &sizeHints);
+ 
++	// Try to prevent test window from stealing focus
++	wmHints = XAllocWMHints();
++	wmHints->flags |= InputHint;
++	wmHints->input = False;
++
++	XSetWMHints(winSys->dpy, xWindow, wmHints);
++
++	XFree(wmHints);
++
+ 	// Map the window and wait for it to appear:
+ 	XMapWindow(winSys->dpy, xWindow);
+ 	XEvent event;
+-- 
+1.7.4
+

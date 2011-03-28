@@ -1,0 +1,27 @@
+GIT_URI="git://glean.git.sourceforge.net/gitroot/glean/glean"
+inherit git
+
+DESCRIPTION="OpenGL benchmark suite"
+HOMEPAGE="http://glean.sourceforge.net/"
+LICENSE="MIT"
+
+PATCH_URI="
+	0001-Fix-build-of-showvis-for-cygwin.patch
+	0002-Cosmetic-fixes-for-compare-mode.patch
+	0003-Set-window-manager-hint-to-avoid-test-window-from-st.patch
+	0004-jhbuild-build-helper-Makefile.patch
+"
+
+src_compile() {
+	lndirs
+	cd ${B}
+	cygmake
+}
+
+src_install() {
+	cd ${B}
+	dobin bin/difftiff.exe bin/glean.exe bin/showtiff.exe bin/showvis.exe
+
+	docinto html
+	dodoc ${S}/doc/html/*
+}

@@ -1,0 +1,98 @@
+From 5b94d8f6b04f400500d23841d9183d2901bbc8b8 Mon Sep 17 00:00:00 2001
+From: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date: Tue, 12 Oct 2010 00:41:30 +0100
+Subject: [PATCH 2/4] Cosmetic fixes for -compare mode
+
+MultiTest::compareOne neglects to report the name of the test
+which it is comparing the results for
+
+Some tests report just "New: FAIL Old: FAIL", omitting the test
+name and without a trailing '\n', so they run into the next test's
+results (which is irritating).  On further examination, they are using
+comparePassFail() which would report this information in any case
+if it was interesting (because the result had changed).
+
+Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+---
+ src/glean/tdepthstencil.cpp |    6 ------
+ src/glean/tmultitest.cpp    |    6 ++++++
+ src/glean/treadpixperf.cpp  |    7 -------
+ src/glean/ttexture_srgb.cpp |   10 ----------
+ 4 files changed, 6 insertions(+), 23 deletions(-)
+
+diff --git a/src/glean/tdepthstencil.cpp b/src/glean/tdepthstencil.cpp
+index ad672ef..7ca83f5 100644
+--- a/src/glean/tdepthstencil.cpp
++++ b/src/glean/tdepthstencil.cpp
+@@ -366,12 +366,6 @@ DepthStencilTest::compareOne(DepthStencilResult &oldR,
+ 			env->log << "\t\t\tnew: " << newR.readDepthUshortRate;
+ 		}
+ 	}
+-	else {
+-		env->log << "\tNew: ";
+-		env->log << (newR.pass ? "PASS" : "FAIL");
+-		env->log << "\tOld: ";
+-		env->log << (oldR.pass ? "PASS" : "FAIL");
+-	}
+ }
+ 
+ 
+diff --git a/src/glean/tmultitest.cpp b/src/glean/tmultitest.cpp
+index a95bd17..a0bbd78 100644
+--- a/src/glean/tmultitest.cpp
++++ b/src/glean/tmultitest.cpp
+@@ -106,6 +106,12 @@ MultiTest::compareOne(MultiTestResult &oldR,
+ {
+ 	if (oldR.numPassed != newR.numPassed ||
+ 		oldR.numFailed != newR.numFailed) {
++                env->log << name
++                                 << ":  DIFF "
++                                 << newR.config->conciseDescription()
++                                 << '\n'
++                                 << '\t';
++
+ 		env->log << "Different results: passed: "
+ 				 << oldR.numPassed
+ 				 << " vs. "
+diff --git a/src/glean/treadpixperf.cpp b/src/glean/treadpixperf.cpp
+index 7ad3d42..5143930 100644
+--- a/src/glean/treadpixperf.cpp
++++ b/src/glean/treadpixperf.cpp
+@@ -476,13 +476,6 @@ ReadpixPerfTest::compareOne(ReadpixPerfResult &oldR,
+ 			}
+ 		}
+ 	}
+-	else {
+-		// one test or the other failed
+-		env->log << "\tNew: ";
+-		env->log << (newR.pass ? "PASS" : "FAIL");
+-		env->log << "\tOld: ";
+-		env->log << (oldR.pass ? "PASS" : "FAIL");
+-	}
+ }
+ 
+ 
+diff --git a/src/glean/ttexture_srgb.cpp b/src/glean/ttexture_srgb.cpp
+index 10909c0..c7ee9aa 100644
+--- a/src/glean/ttexture_srgb.cpp
++++ b/src/glean/ttexture_srgb.cpp
+@@ -322,16 +322,6 @@ TextureSRGBTest::compareOne(TextureSRGBResult &oldR,
+ 			     TextureSRGBResult &newR)
+ {
+ 	comparePassFail(oldR, newR);
+-
+-	if (newR.pass && oldR.pass == newR.pass) {
+-		// XXX
+-	}
+-	else {
+-		env->log << "\tNew: ";
+-		env->log << (newR.pass ? "PASS" : "FAIL");
+-		env->log << "\tOld: ";
+-		env->log << (oldR.pass ? "PASS" : "FAIL");
+-	}
+ }
+ 
+ 
+-- 
+1.7.4
+
